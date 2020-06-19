@@ -4,9 +4,29 @@ console.log("Remote: ", remote);
 var {ipcRenderer } = require('electron');
 const {Menu} = require('electron').remote;
 
-function xyz() {
-    console.log("xyz");
+function renderVue(Vue) {
+    var data = {
+        x: 123,
+        y: 'A'
+    }
+
+    var keys = ['x','y'];
+    var watch = {}
+    keys.map(variable => watch[variable] = function(old,newV) {
+      ipcRenderer.send("change", vue.$data);
+    });
+
+    ipcRenderer.on('set', (e,changes) => {
+      _.keys(changes).map(k => Vue.set(vue,k,changes[k]));
+    })
+    
+    var vue = new Vue({
+      el: '#main',
+      watch,
+      data
+    });
 }
+
 
 ipcRenderer.on('request', function(){
     ipcRenderer.send('hello', {a:123});
