@@ -1,11 +1,12 @@
 {
-  "name": "electron-quick-start",
+  "name": "MultiWindow",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
-  "main": "main.js",
+  "description": "Multi window browser",
+  "main": "app.js",
   "scripts": {
     "start": "electron .",
-    "debug": "electron --inspect --debug-brk app.js"
+    "watch": "nodemon --ignore '*.json' --exec electron .",
+    "debug": "electron --inspect=5858 app.js"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -18,6 +19,10 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^9.0.4"
+    "electron": "^9.0.4",
+    "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "vue": "^2.6.11"
   }
 }

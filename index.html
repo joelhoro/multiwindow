@@ -3,18 +3,60 @@
   <head>
     <meta charset="UTF-8">
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <!-- <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" /> -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
+    <!-- <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.10.2/underscore.js" integrity="sha256-FEW7wlLhDXp6q11nmimzmLSkRq2cyXEtY7ture58mJ0=" crossorigin="anonymous"></script>
   </head>
   <body>
-    <h1>Hello World!</h1>
-    We are using Node.js <span id="node-version"></span>,
-    Chromium <span id="chrome-version"></span>,
-    and Electron <span id="electron-version"></span>.
+
+
+    <span id='main'>
+      {{x}}
+      <br>
+<input type='text' v-model='x' ></input>
+
+    <select id='selector' v-model='y'>
+      <option>A</option>
+      <option>B</option>
+      <option>C</option>
+      <option>D</option>
+    </select>
+  {{y}}    
+
+  </span>
 
     <!-- You can also require other files to run in this process -->
     <script src="./renderer.js"></script>
     <script src='./main.js'></script>
+<script type='module'>
+import Vue from './node_modules/vue/dist/vue.esm.browser.js';
+var {ipcRenderer } = require('electron');
+
+var data = {
+    x: 123,
+    y: 'A'
+}
+
+var keys = ['x','y'];
+var watch = {}
+keys.map(variable => watch[variable] = function(old,newV) {
+  ipcRenderer.send("change", vue.$data);
+});
+
+ipcRenderer.on('set', (e,changes) => {
+  _.keys(changes).map(k => Vue.set(vue,k,changes[k]));
+})
+
+var vue = new Vue({
+el: '#main',
+watch,
+//components: {'my-component': myComponent},
+data
+});
+
+
+</script>
     <!-- <script>require('./main.js')</script> -->
   </body>
 </html>
