@@ -71,14 +71,14 @@ let TrayMenu = class {
             var args = link[1]
             var linkObject;
             if(args)
-                linkObject = fn(...link[1]);
+                linkObject = fn(...args);
             else
                 linkObject = fn()
         
             if(linkObject.type)
                 return linkObject;
             return {
-                label: linkObject.label, 
+                label: linkObject.label,
                 click: () => linkObject.action(thisCopy),
             }
         })
