@@ -16,7 +16,7 @@ let MultiWindowApp = class {
   }
 
   initialize(preserveState) {
-    this.traymenu = new TrayMenu(this);
+    this.traymenu = new TrayMenu(this, config);
     var thisCopy = this;
     if(preserveState)
       fs.readFile(settings_file, 'utf-8', function(_err, data) {
