@@ -133,7 +133,7 @@ let MultiWindowApp = class {
             {
               click: app.exit,
               label: '&Exit app',
-              accelerator: 'CmdOrCtrl+X',
+              accelerator: 'CmdOrCtrl+E',
             },
     
         ]
