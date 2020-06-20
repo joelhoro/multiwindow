@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, dialog} = require('electron')
+const {app, Menu, BrowserWindow, Tray, dialog, ipcRenderer} = require('electron')
 const path = require('path')
 const ipc = require('electron').ipcMain
 const fs = require('fs');
@@ -12,9 +12,55 @@ var settings_file = app.getAppPath() + '/settings/settings.json'
 
 console.log("Hello")
 
+function getmenu(w) {
+  return Menu.buildFromTemplate([{
+    label: '&File',
+    submenu: [
+        {
+            label: '&Save settings',
+            click() {
+                savesettings();
+            }
+        },
+        {
+            label: '&New window',
+            click() {
+                console.log("Requesting new window");
+                createWindow();
+            }
+        },
+        {
+          type: 'separator'
+        },
+        {
+          role: 'close',
+          label: 'Close window'
+        },
+        {
+          click: app.exit,
+          label: '&Exit app'
+        },
+  
+    ]
+  },
+  {    label: '&Debug',
+    submenu: [
+      {
+        label: 'Main',
+        click() {
+          debugger;
+      }
+    }
+    ]
+  }  
+  ])
+  
+}
+
+
 function createWindow (settings) {
   if(!settings) {
-    settings = { size: { width: 900, height: 800 } };
+    settings = { size: [900,800] };
   }
 
   let newWindow = new BrowserWindow({
@@ -29,10 +75,11 @@ function createWindow (settings) {
   if(settings.position)
     newWindow.setPosition(settings.position[0],settings.position[1])
 
+  newWindow.setMenu(getmenu(newWindow));
   newWindow.loadURL('file://' + __dirname + "/renderer/index.html")
   if(openDevTools)
     newWindow.webContents.openDevTools()
-    
+
   newWindow.setTitle("Window #" + BrowserWindow.getAllWindows().length);
   newWindow.focus();
   newWindow.webContents.on('dom-ready', () =>  {
@@ -75,8 +122,7 @@ ipc.on('change', (evt,args) => {
   //BrowserWindow.getAllWindows().map(w => w.send('set',args));
 });
 
-ipc.on('save-settings', (args) => {
-  
+function savesettings() {
   showCoordinates();
   var data = BrowserWindow.getAllWindows().map(w => {
     
@@ -94,13 +140,24 @@ ipc.on('save-settings', (args) => {
   catch(e) { 
     console.error('Failed to save the file !'); 
   }
-})
+
+  console.log(new Date());
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 
 app.whenReady().then(() => {
+  tray = new Tray('build/icon.ico')
+  const contextMenu = Menu.buildFromTemplate([
+    { label: 'New VolGUI component', click: () => createWindow() },
+    { label: 'Save', click: savesettings },
+    { label: 'Exit', click: app.exit },
+  ])
+  tray.setToolTip('This is my application.')
+  tray.setContextMenu(contextMenu)
+    
   if(preserveState)
     fs.readFile(settings_file, 'utf-8', function(err, data) {
       var settings = JSON.parse(data);
