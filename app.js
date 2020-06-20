@@ -10,7 +10,8 @@ showCoordinates();
 const preserveState = true;
 const openDevTools = true;
 
-var settings_file = app.getAppPath() + '/settings/settings.json'
+//var settings_file = app.getAppPath() + '/settings/settings.json'
+var settings_file = 'settings/settings.json';
 
 
 console.log("Hello")
@@ -145,7 +146,7 @@ ipc.on('change', (evt,args) => {
 
 
 var updates = {}
-ipc.on('save-settings', (args) => {
+function savesettings() {
   BrowserWindow.getAllWindows().map(w => w.send('update'));
   ipc.on('update-response', (evt,args) => {
     updates[evt.sender.id] = args;
@@ -169,7 +170,8 @@ ipc.on('save-settings', (args) => {
       }
     }
   });
-})
+  console.log(`Saved to ${settings_file} on ${new Date()}`);
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
