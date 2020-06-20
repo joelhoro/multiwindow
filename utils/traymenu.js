@@ -1,4 +1,5 @@
-const {app, Menu, Tray, nativeImage} = require('electron')
+const {app, Menu, Tray, nativeImage, shell} = require('electron')
+var execFile = require('child_process').execFile;
 
 var componentTypes = [
     'Risk viewer',
@@ -6,12 +7,47 @@ var componentTypes = [
     'Browser',
   ];
   
-  var layouts = [
-    'Bob',
-    'Alice',
-    'Charles',
-  ]
+var layouts = [
+'Bob',
+'Alice',
+'Charles',
+]
 
+var LINKTYPE = {
+    URL: 'url'
+}
+
+function Link(label, url) {
+    return { label, action: (trayMenu) => {
+            shell.openExternal(url);
+            trayMenu.notify('info', `Opening ${label} [${url}]`)
+        }
+    }
+}
+
+function Shell(label, program, args) {
+    return { label, action: (trayMenu) => {
+            execFile(program, args.split(' '));
+            trayMenu.notify('info', `Opening ${label} [${program}]`)
+        }
+    }
+}
+
+var links = [
+    Link('Google', 'http://www.google.com'),
+    Link('CNN', 'http://www.cnn.com'),
+    Link('Disney', 'http://www.disney.com'),
+    { type: 'separator'},
+    Shell('Putty localhost', "C:\\Program Files\\PuTTY\\putty.exe","-load Local"),
+    Shell('Putty joel@localhost', "C:\\Program Files\\PuTTY\\putty.exe","-ssh joel@localhost 2222")
+]
+
+function linkMenu(trayMenu) {
+    return links.map(link => (link.type? link : {
+        label: link.label, 
+        click: () => link.action(trayMenu),
+    }))
+} 
 
 let TrayMenu = class {
     constructor(main) {
@@ -37,7 +73,7 @@ let TrayMenu = class {
         this.tray.displayBalloon({
           icon: img,
           iconType: type,
-          title: 'VolGUI notification',
+          title: 'VolGUI',
           content
         });
     }
@@ -54,11 +90,14 @@ let TrayMenu = class {
             click: () => main.createWindow()
             }))  
             },
+            { label: 'Links', submenu: linkMenu(thisCopy) },
             { label: 'Refresh', click: thisCopy.refresh },
             { label: 'Save', click: thisCopy.main.savesettings },
             { label: 'Exit', click: app.exit },
         ])
-        var tray = this.tray
+        //Shell('Putty', "C:\\Program Files\\PuTTY\\putty.exe",  " -load Local").action(thisCopy);
+
+        var tray = this.tray;
         tray.setContextMenu(contextMenu)
         tray.on('click', () => tray.popUpContextMenu());
         this.notify("info","VolGUI started");
