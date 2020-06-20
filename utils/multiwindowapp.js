@@ -3,6 +3,7 @@ const {app, Menu, BrowserWindow} = require('electron')
 const path = require('path');
 const {showCoordinates, MESSAGES} = require('./apputils');
 const {TrayMenu} = require('./traymenu');
+const {config} = require('./config');
 const ipc = require('electron').ipcMain
 const fs = require('fs');
 
@@ -128,6 +129,10 @@ let MultiWindowApp = class {
             },
     
         ]
+      },
+      {
+          label: '&Links',
+          submenu: this.traymenu.linkMenu(config.links)
       },
       {    label: '&Debug',
         submenu: [

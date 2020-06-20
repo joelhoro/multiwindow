@@ -1,5 +1,6 @@
 const {app, Menu, Tray, nativeImage, shell} = require('electron')
 var execFile = require('child_process').execFile;
+var {config} = require('./config')
 
 var componentTypes = [
     'Risk viewer',
@@ -33,21 +34,17 @@ function Shell(label, program, args) {
     }
 }
 
-var links = [
-    Link('Google', 'http://www.google.com'),
-    Link('CNN', 'http://www.cnn.com'),
-    Link('Disney', 'http://www.disney.com'),
-    { type: 'separator'},
-    Shell('Putty localhost', "C:\\Program Files\\PuTTY\\putty.exe","-load Local"),
-    Shell('Putty joel@localhost', "C:\\Program Files\\PuTTY\\putty.exe","-ssh joel@localhost 2222")
-]
+function Separator() {
+    return { type: 'separator' }
+}
 
-function linkMenu(trayMenu) {
-    return links.map(link => (link.type? link : {
-        label: link.label, 
-        click: () => link.action(trayMenu),
-    }))
-} 
+
+fn_map = {
+    link: Link,
+    separator: Separator,
+    shell: Shell
+}
+
 
 let TrayMenu = class {
     constructor(main) {
@@ -77,22 +74,42 @@ let TrayMenu = class {
           content
         });
     }
+
+    linkMenu(links) {
+        var thisCopy = this;
+        return links.map(link => {
+            var fn = fn_map[link[0]]
+            var args = link[1]
+            var linkObject;
+            if(args)
+                linkObject = fn(...link[1]);
+            else
+                linkObject = fn()
+        
+            if(linkObject.type)
+                return linkObject;
+            return {
+                label: linkObject.label, 
+                click: () => linkObject.action(thisCopy),
+            }
+        })
+    }
     
     createMenuItems() {
         var thisCopy = this;
         const contextMenu = Menu.buildFromTemplate([
             { label: 'Switch to layout', submenu: layouts.map(layout => ({
             label: layout,
-            click: () => switchToLayout(layout)
+            click: () => main.switchToLayout(layout)
             }))},
             { label: 'New VolGUI component', submenu: componentTypes.map(t => ({
             label: t,
             click: () => main.createWindow()
             }))  
             },
-            { label: 'Links', submenu: linkMenu(thisCopy) },
-            { label: 'Refresh', click: thisCopy.refresh },
-            { label: 'Save', click: thisCopy.main.savesettings },
+            { label: 'Links', submenu: this.linkMenu(config.links) },
+            { label: 'Refresh', click: () => thisCopy.refresh() },
+            { label: 'Save', click: () => thisCopy.main.savesettings() },
             { label: 'Exit', click: app.exit },
         ])
         //Shell('Putty', "C:\\Program Files\\PuTTY\\putty.exe",  " -load Local").action(thisCopy);
