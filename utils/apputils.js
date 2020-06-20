@@ -12,7 +12,7 @@ function showCoordinates() {
     })
   }
   
-  var messages = {
+  var MESSAGES = {
     UPDATE: 'UPDATE',
     UPDATE_RESPONSE: 'UPDATE-RESPONSE',
     NEW_WINDOW: 'NEW-WINDOW',
@@ -20,4 +20,4 @@ function showCoordinates() {
   }
 
   exports.showCoordinates = showCoordinates
-  exports.messages = messages;
+  exports.MESSAGES = MESSAGES;

@@ -1,7 +1,7 @@
 // Modules to control application life and create native browser window
 const {app, Menu, BrowserWindow} = require('electron')
 const path = require('path');
-const {showCoordinates, messages} = require('./apputils');
+const {showCoordinates, MESSAGES} = require('./apputils');
 const {TrayMenu} = require('./traymenu');
 const ipc = require('electron').ipcMain
 const fs = require('fs');
@@ -57,7 +57,7 @@ let MultiWindowApp = class {
       newWindow.focus();
       newWindow.webContents.on('dom-ready', () =>  {
         if(settings.data)
-          newWindow.webContents.send(messages.SET_VALUES, settings.data)
+          newWindow.webContents.send(MESSAGES.SET_VALUES, settings.data)
       })
   
       // mainWindow.on('resize', showCoordinates);
@@ -151,8 +151,8 @@ let MultiWindowApp = class {
     }
 
   savesettings() {
-    BrowserWindow.getAllWindows().map(w => w.send(messages.UPDATE));
-    ipc.on(messages.UPDATE_RESPONSE, (evt,args) => {
+    BrowserWindow.getAllWindows().map(w => w.send(MESSAGES.UPDATE));
+    ipc.on(MESSAGES.UPDATE_RESPONSE, (evt,args) => {
       this.updates[evt.sender.id] = args;
       if(Object.keys(this.updates).length == BrowserWindow.getAllWindows().length) {
         showCoordinates();
