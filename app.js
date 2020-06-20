@@ -8,7 +8,7 @@ const {showCoordinates,notify} = require('./utils/apputils');
 console.log(showCoordinates);
 showCoordinates();
 const preserveState = true;
-const openDevTools = true;
+const openDevTools = false;
 
 //var settings_file = app.getAppPath() + '/settings/settings.json'
 var settings_file = 'settings/settings.json';
@@ -50,10 +50,17 @@ function getmenu(w) {
   {    label: '&Debug',
     submenu: [
       {
-        label: 'Main',
+        label: 'Open devtools',
+        click(evt,args) {
+          args.openDevTools();
+        }
+      },
+      {
+        label: 'Hit breakpoing',
         click() {
           debugger;
       }
+
     }
     ]
   }
