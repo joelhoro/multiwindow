@@ -1,13 +1,14 @@
 // Modules to control application life and create native browser window
 const {app, Menu, BrowserWindow} = require('electron')
 const path = require('path');
-const {showCoordinates, MESSAGES, resourcesPath} = require('./apputils');
+const {showCoordinates, MESSAGES, resourcesPath, isDev} = require('./apputils');
 const {TrayMenu} = require('./traymenu');
 const {config} = require('./config');
 const ipc = require('electron').ipcMain
 const fs = require('fs');
 
-const openDevTools = true;
+
+const openDevTools = isDev();
 var settings_file = resourcesPath('settings/settings.json');
 
 let MultiWindowApp = class {

@@ -20,9 +20,13 @@ function showCoordinates() {
     SET_VALUES: 'SET_VALUES'
   }
 
+  function isDev() {
+    return process.env.NODE_ENV == 'dev';
+  }
+
   function resourcesPath(file) {
     var basePath;
-    if (process.env.NODE_ENV == 'dev') {
+    if (isDev()) {
         console.log("Running in dev mode");
         basePath = path.join('assets')
       } else {
@@ -37,3 +41,4 @@ function showCoordinates() {
   exports.showCoordinates = showCoordinates
   exports.resourcesPath = resourcesPath;
   exports.MESSAGES = MESSAGES;
+  exports.isDev = isDev;
