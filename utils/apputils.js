@@ -22,7 +22,6 @@ function showCoordinates() {
 
   function resourcesPath(file) {
     var basePath;
-    console.log(`<${process.env.NODE_ENV}>`);
     if (process.env.NODE_ENV == 'dev') {
         console.log("Running in dev mode");
         basePath = path.join('assets')
@@ -30,9 +29,9 @@ function showCoordinates() {
         console.log("Running in prod");
         basePath = path.join(process.resourcesPath, 'assets', '')  
       }
-    var x= `${basePath}\\${file}`;
-    console.log("Resources: ", x);
-    return x;
+    var fullPath = `${basePath}\\${file}`
+    console.log("Resources: ", fullPath);
+    return fullPath;
   }
 
   exports.showCoordinates = showCoordinates
