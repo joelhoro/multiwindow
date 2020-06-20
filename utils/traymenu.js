@@ -1,5 +1,7 @@
 const {app, Menu, Tray, nativeImage, shell} = require('electron')
 var execFile = require('child_process').execFile;
+const path = require('path');
+const {resourcesPath} = require('./apputils');
 
 
 var LINKTYPE = {
@@ -39,8 +41,7 @@ let TrayMenu = class {
         this.main = main;
         this.config = config
         this.count = 1;
-        this.img = app.getAppPath() + '/build/iconinv.png';
-        this.img = 'c:/Users/Joel/Desktop/opensource/electron-quick-start/build/iconinv.png';
+        this.img = resourcesPath("iconinv.png");
         this.tray = new Tray(this.img)
         this.tray.setToolTip('VolGUI')
         this.createMenuItems();

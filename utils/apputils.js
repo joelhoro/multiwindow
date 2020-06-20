@@ -1,4 +1,5 @@
 const { BrowserWindow, nativeImage } = require('electron');
+const path = require('path');
 
 function showCoordinates() {
     console.log("======== Resize / Move =========");
@@ -19,5 +20,21 @@ function showCoordinates() {
     SET_VALUES: 'SET_VALUES'
   }
 
+  function resourcesPath(file) {
+    var basePath;
+    console.log(`<${process.env.NODE_ENV}>`);
+    if (process.env.NODE_ENV == 'dev') {
+        console.log("Running in dev mode");
+        basePath = path.join('assets')
+      } else {
+        console.log("Running in prod");
+        basePath = path.join(process.resourcesPath, 'assets', '')  
+      }
+    var x= `${basePath}\\${file}`;
+    console.log("Resources: ", x);
+    return x;
+  }
+
   exports.showCoordinates = showCoordinates
+  exports.resourcesPath = resourcesPath;
   exports.MESSAGES = MESSAGES;
