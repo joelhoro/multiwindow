@@ -110,12 +110,14 @@ let MultiWindowApp = class {
         submenu: [
             {
                 label: '&Save settings',
+                accelerator: 'CmdOrCtrl+S',
                 click() {
                     thisCopy.savesettings();
                 }
             },
             {
                 label: '&New window',
+                accelerator: 'CmdOrCtrl+N',
                 click() {
                     console.log("Requesting new window");
                     thisCopy.createWindow();
@@ -130,7 +132,8 @@ let MultiWindowApp = class {
             },
             {
               click: app.exit,
-              label: '&Exit app'
+              label: '&Exit app',
+              accelerator: 'CmdOrCtrl+X',
             },
     
         ]
@@ -143,12 +146,13 @@ let MultiWindowApp = class {
         submenu: [
           {
             label: 'Open devtools',
+            accelerator: 'CmdOrCtrl+D',
             click(evt,args) {
-              args.openDevTools();
+              args.toggleDevTools();
             }
           },
           {
-            label: 'Hit breakpoing',
+            label: 'Hit breakpoint',
             click() {
               debugger;
           }
