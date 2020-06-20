@@ -35,7 +35,7 @@
       }
     ],
     "directories": {
-      "output": "dist6"
+      "output": "dist"
     }
   }
 }
