@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "electron .",
-    "watch": "nodemon --ignore '*.json' --exec electron .",
+    "watch": "nodemon --ignore settings/ --exec electron .",
     "debug": "electron --inspect=5858 app.js"
   },
   "repository": "https://github.com/electron/electron-quick-start",
