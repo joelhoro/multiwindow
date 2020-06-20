@@ -9,7 +9,7 @@
     "debug": "set NODE_ENV=dev&& electron --inspect=5858 app.js",
     "build": "electron-builder"
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/joelhoro/multiwindow",
   "keywords": [
     "Electron",
     "quick",
