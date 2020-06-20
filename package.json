@@ -1,12 +1,13 @@
 {
   "name": "MultiWindow",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Multi window browser",
   "main": "app.js",
   "scripts": {
     "start": "electron .",
     "watch": "nodemon --ignore settings/ --exec electron .",
-    "debug": "electron --inspect=5858 app.js"
+    "debug": "electron --inspect=5858 app.js",
+    "build": "electron-builder"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -20,6 +21,7 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^9.0.4",
+    "electron-builder": "^22.7.0",
     "nodemon": "^2.0.4"
   },
   "dependencies": {
