@@ -15,7 +15,8 @@ function showCoordinates() {
   var messages = {
     UPDATE: 'UPDATE',
     UPDATE_RESPONSE: 'UPDATE-RESPONSE',
-    NEW_WINDOW: 'NEW-WINDOW'
+    NEW_WINDOW: 'NEW-WINDOW',
+    SET_VALUES: 'SET_VALUES'
   }
 
   exports.showCoordinates = showCoordinates

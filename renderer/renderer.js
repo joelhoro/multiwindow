@@ -1,13 +1,13 @@
 
 var {ipcRenderer } = require('electron');
+var {messages} = require('../utils/apputils');
 
-
-ipcRenderer.on('update', () => {
+ipcRenderer.on(messages.UPDATE, () => {
     var x = { y: vue.y };
-    ipcRenderer.send('update-response', x);
+    ipcRenderer.send(messages.UPDATE_RESPONSE, x);
 })
 
-ipcRenderer.on('set-values', (evt,argv) => {
+ipcRenderer.on(messages.SET_VALUES, (evt,argv) => {
     debugger;
     console.log("Received ", argv)
     Object.keys(argv).map(k => Vue.set(vue, k, argv[k]));
