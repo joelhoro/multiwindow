@@ -12,16 +12,11 @@ function showCoordinates() {
     })
   }
   
-  function notify(tray, type, content) {
-    let img = nativeImage.createFromPath('build/iconinv.png');
-
-    tray.displayBalloon({
-      icon: img,
-      iconType: type,
-      title: 'VolGUI notification',
-      content
-    });
+  var messages = {
+    UPDATE: 'UPDATE',
+    UPDATE_RESPONSE: 'UPDATE-RESPONSE',
+    NEW_WINDOW: 'NEW-WINDOW'
   }
 
-  exports.notify = notify;
   exports.showCoordinates = showCoordinates
+  exports.messages = messages;
