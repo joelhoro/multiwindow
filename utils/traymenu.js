@@ -54,8 +54,8 @@ let TrayMenu = class {
     }
        
     notify(type, content) {
-        let img = nativeImage.createFromPath('../build/iconinv.png');
-    
+        let img = nativeImage.createFromPath(this.img);
+
         this.tray.displayBalloon({
           icon: img,
           iconType: type,
