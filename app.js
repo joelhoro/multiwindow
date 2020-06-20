@@ -3,8 +3,11 @@ const {app, Menu, BrowserWindow, Tray, dialog, ipcRenderer} = require('electron'
 const path = require('path')
 const ipc = require('electron').ipcMain
 const fs = require('fs');
+const showCoordinates = require('./utils/apputils').showCoordinates;
 
-const preserveState = false;
+console.log(showCoordinates);
+showCoordinates();
+const preserveState = true;
 const openDevTools = true;
 
 var settings_file = app.getAppPath() + '/settings/settings.json'
@@ -40,7 +43,7 @@ function getmenu(w) {
           click: app.exit,
           label: '&Exit app'
         },
-  
+
     ]
   },
   {    label: '&Debug',
@@ -52,17 +55,19 @@ function getmenu(w) {
       }
     }
     ]
-  }  
+  }
   ])
-  
+
 }
 
 
 function createWindow (settings) {
+
   if(!settings) {
     settings = { size: [900,800] };
   }
 
+  console.log("Settings: ", settings);
   let newWindow = new BrowserWindow({
     width: settings.size[0],
     height: settings.size[1],
@@ -92,57 +97,79 @@ function createWindow (settings) {
   newWindow.on('close', () => {
     newWindow = null;
   });
+
+  var started_moving = false;
+  var start_positions = {};
+  newWindow.on('will-move', (evt,newBounds) => {
+    var id = newWindow.id;
+    if(!started_moving) {
+      console.log("Collecting positions");
+      BrowserWindow.getAllWindows().map(w => start_positions[w.id] = w.getPosition());
+      console.log(start_positions);
+    }
+
+    started_moving = true;
+    console.log("Move started");
+    var currentPosition = newWindow.getPosition();
+    console.log(newBounds);
+    var shiftX = newBounds.x-start_positions[id][0];
+    var shiftY = newBounds.y-start_positions[id][1];
+    console.log("Shift: ", shiftX, shiftY);
+    BrowserWindow.getAllWindows().map(w => {
+      if(w.id == id)
+        return;
+      var position = start_positions[w.id];
+      var newPosition = [position[0]+shiftX, position[1]+shiftY]
+      //w.setPosition(newPosition[0], newPosition[1]);
+    })
+
+    //console.log(newWindow.getPosition());
+    console.log("===============")
+  })
+
 }
 
-ipc.on('new-window', (evt,args) => {
-  createWindow();
-})
+
+// EVENTS
+
+ipc.on('new-window', createWindow);
 
 ipc.on('debug', (evt,args) => { debugger; })
-ipc.on('hello', (evt,args) => { console.log(args); })
-
-function showCoordinates() {
-  console.log("======== Resize / Move =========");
-  //console.log(windows);
-  BrowserWindow.getAllWindows().map(w => {
-    //console.log("Window: ", w);    
-    console.log(w.getTitle());
-    console.log("Size: ", w.getSize())
-    console.log("Position: ", w.getPosition())
-    console.log("X: ", w.document)
-  })
-}
 
 var window_values = {}
-
 ipc.on('change', (evt,args) => {
   window_values[evt.sender.id] = args;
   console.log("Change: ", args)
-
   //BrowserWindow.getAllWindows().map(w => w.send('set',args));
 });
 
-function savesettings() {
-  showCoordinates();
-  var data = BrowserWindow.getAllWindows().map(w => {
-    
-    return {
-      data: window_values[w.id],
-      title: w.getTitle(),
-      size: w.getSize(),
-      position: w.getPosition()
+
+var updates = {}
+ipc.on('save-settings', (args) => {
+  BrowserWindow.getAllWindows().map(w => w.send('update'));
+  ipc.on('update-response', (evt,args) => {
+    updates[evt.sender.id] = args;
+    if(Object.keys(updates).length == BrowserWindow.getAllWindows().length) {
+      showCoordinates();
+      var data = BrowserWindow.getAllWindows().map(w => {
+        return {
+          data: updates[w.id],
+          title: w.getTitle(),
+          size: w.getSize(),
+          position: w.getPosition()
+        }
+      });
+      updates = {}
+      try {
+        console.log("Saving data: ", data, " to ", settings_file);
+        fs.writeFileSync(settings_file, JSON.stringify(data), 'utf-8');
+      }
+      catch(e) {
+        console.error('Failed to save the file !');
+      }
     }
   });
-  try { 
-    console.log("Saving data: ", data);
-    fs.writeFileSync(settings_file, JSON.stringify(data), 'utf-8'); 
-  }
-  catch(e) { 
-    console.error('Failed to save the file !'); 
-  }
-
-  console.log(new Date());
-}
+})
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -157,7 +184,7 @@ app.whenReady().then(() => {
   ])
   tray.setToolTip('This is my application.')
   tray.setContextMenu(contextMenu)
-    
+
   if(preserveState)
     fs.readFile(settings_file, 'utf-8', function(err, data) {
       var settings = JSON.parse(data);
