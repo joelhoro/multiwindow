@@ -20,6 +20,11 @@ let MultiWindowApp = class {
     var thisCopy = this;
     if(preserveState)
       fs.readFile(settings_file, 'utf-8', function(_err, data) {
+        if(_err) {
+          thisCopy.traymenu.notify('error', `Could not open ${settings_file}`);
+          return thisCopy.createWindow();
+        }
+          
         var settings = JSON.parse(data);
         console.log(settings)
         settings.map(setting => {
