@@ -1,4 +1,4 @@
-const { BrowserWindow } = require('electron');
+const { BrowserWindow, nativeImage } = require('electron');
 
 function showCoordinates() {
     console.log("======== Resize / Move =========");
@@ -12,5 +12,16 @@ function showCoordinates() {
     })
   }
   
+  function notify(tray, type, content) {
+    let img = nativeImage.createFromPath('build/iconinv.png');
 
+    tray.displayBalloon({
+      icon: img,
+      iconType: type,
+      title: 'VolGUI notification',
+      content
+    });
+  }
+
+  exports.notify = notify;
   exports.showCoordinates = showCoordinates

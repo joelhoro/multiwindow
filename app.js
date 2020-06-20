@@ -1,9 +1,9 @@
 // Modules to control application life and create native browser window
-const {app, Menu, BrowserWindow, Tray, dialog, ipcRenderer} = require('electron')
+const {app, Menu, BrowserWindow, Tray, nativeImage} = require('electron')
 const path = require('path')
 const ipc = require('electron').ipcMain
 const fs = require('fs');
-const showCoordinates = require('./utils/apputils').showCoordinates;
+const {showCoordinates,notify} = require('./utils/apputils');
 
 console.log(showCoordinates);
 showCoordinates();
@@ -164,28 +164,66 @@ function savesettings() {
       try {
         console.log("Saving data: ", data, " to ", settings_file);
         fs.writeFileSync(settings_file, JSON.stringify(data), 'utf-8');
+        
       }
       catch(e) {
         console.error('Failed to save the file !');
       }
     }
   });
-  console.log(`Saved to ${settings_file} on ${new Date()}`);
+  notify(tray, 'info', `Saved to ${settings_file} on ${new Date()}`);
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 
-app.whenReady().then(() => {
-  tray = new Tray('build/icon.ico')
+var componentTypes = [
+  'Risk viewer',
+  'VolGUI addin',
+  'Browser',
+];
+
+var layouts = [
+  'Bob',
+  'Alice',
+  'Charles',
+]
+
+function switchToLayout(layout) {
+  console.log("Switching to " + layout);
+}
+
+var i = 1;
+function refresh() {
+  componentTypes.push("New component " + String(i++));
+  setTrayMenu(tray);
+}
+
+function setTrayMenu(tray) {
   const contextMenu = Menu.buildFromTemplate([
-    { label: 'New VolGUI component', click: () => createWindow() },
+    { label: 'Switch to layout', submenu: layouts.map(layout => ({
+      label: layout,
+      click: () => switchToLayout(layout)
+    }))},
+    { label: 'New VolGUI component', submenu: componentTypes.map(t => ({
+      label: t,
+      click: () => createWindow()
+    }))  
+    },
+    { label: 'Refresh', click: refresh },
     { label: 'Save', click: savesettings },
     { label: 'Exit', click: app.exit },
   ])
-  tray.setToolTip('This is my application.')
   tray.setContextMenu(contextMenu)
+  tray.on('click', () => tray.popUpContextMenu());
+  notify(tray,"info","VolGUI started");
+}
+
+app.whenReady().then(() => {
+  tray = new Tray('build/iconinv.png')
+  tray.setToolTip('VolGUI')
+  setTrayMenu(tray);
 
   if(preserveState)
     fs.readFile(settings_file, 'utf-8', function(err, data) {
