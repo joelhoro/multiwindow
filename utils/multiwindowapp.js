@@ -97,7 +97,7 @@ let MultiWindowApp = class {
   
     }
     
-  getmenu = () => {
+  getmenu() {
     var thisCopy = this;
       return Menu.buildFromTemplate([{
         label: '&File',

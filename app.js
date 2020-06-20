@@ -1,19 +1,11 @@
 // Modules to control application life and create native browser window
-const {app, Menu, BrowserWindow, } = require('electron')
-const path = require('path')
-const ipc = require('electron').ipcMain
+const {app, BrowserWindow, } = require('electron')
 const {MultiWindowApp} = require('./utils/multiwindowapp');
 
-//var settings_file = app.getAppPath() + '/settings/settings.json'
 const preserveState = true;
 var main = new MultiWindowApp();
 
 // EVENTS
-
-
-ipc.on('debug', (evt,args) => { debugger; })
-
-
 
 app.whenReady().then(() => {
 
