@@ -39,7 +39,9 @@ let TrayMenu = class {
         this.main = main;
         this.config = config
         this.count = 1;
-        this.tray = new Tray('build/iconinv.png')
+        this.img = app.getAppPath() + '/build/iconinv.png';
+        this.img = 'c:/Users/Joel/Desktop/opensource/electron-quick-start/build/iconinv.png';
+        this.tray = new Tray(this.img)
         this.tray.setToolTip('VolGUI')
         this.createMenuItems();
     }
