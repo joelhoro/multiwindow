@@ -1,6 +1,6 @@
 {
   "name": "MultiWindow",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Multi window browser",
   "main": "app.js",
   "scripts": {
@@ -11,23 +11,20 @@
   },
   "repository": "https://github.com/joelhoro/multiwindow",
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "Electron"
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "author": "Joel Horowitz",
   "devDependencies": {
     "electron": "^9.0.4",
     "electron-builder": "^22.7.0",
     "nodemon": "^2.0.4"
   },
   "dependencies": {
+    "axios": "^0.19.2",
     "vue": "^2.6.11"
   },
   "build": {
+    "appId": "com.example.multiwindow",
     "extraResources": [
       {
         "from": "./assets/",
