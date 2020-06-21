@@ -8,7 +8,7 @@ const ipc = require('electron').ipcMain
 const fs = require('fs');
 
 
-const openDevTools = isDev();
+const openDevTools = false; //isDev();
 var settings_file = resourcesPath('settings/settings.json');
 
 let MultiWindowApp = class {
@@ -66,7 +66,7 @@ let MultiWindowApp = class {
       console.log("Spawning window #", newWindow.id);
       newWindow.webContents.on('dom-ready', () =>  {
         if(settings.data)
-          newWindow.webContents.send(MESSAGES.SET_VALUES, settings.data)
+          newWindow.webContents.send(MESSAGES.SET_VALUES, { data: settings.data, state: settings.state })
       })
   
       // mainWindow.on('resize', showCoordinates);
@@ -181,14 +181,15 @@ let MultiWindowApp = class {
     // prepare listeners
     ipc.on(MESSAGES.UPDATE_RESPONSE, (evt,args) => {
       console.log(`Received from ${args.id}: ${JSON.stringify(args.data)}`);
-      this.updates[args.id] = args.data;
+      this.updates[args.id] = { data: args.data, state: args.state };
       // this is stupid - surely there should be a simpler way to do this
       var ready = BrowserWindow.getAllWindows().filter(w => !this.updates[w.id]).length == 0;
       if(ready) {
         showCoordinates();
         var data = BrowserWindow.getAllWindows().map(w => {
           return {
-            data: this.updates[w.id],
+            data: this.updates[w.id].data,
+            state: this.updates[w.id].state,
             title: w.getTitle(),
             size: w.getSize(),
             position: w.getPosition()

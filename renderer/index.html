@@ -7,6 +7,17 @@
     <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
     <!-- <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'"> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.10.2/underscore.js" integrity="sha256-FEW7wlLhDXp6q11nmimzmLSkRq2cyXEtY7ture58mJ0=" crossorigin="anonymous"></script>
+
+
+
+    <!-- <link rel="stylesheet" href="https://cdn.webix.com/edge/webix.css" type="text/css"> -->
+    <link rel="stylesheet" href="webix/codebase//webix.css" type="text/css">
+    <script src="webix/codebase/webix.min.js" type="text/javascript"></script>
+    <!-- <link rel="stylesheet" href="webix/pivot_7.3.6_com/codebase/pivot.css" type="text/css">
+    <script src="webix/pivot_7.3.6_com/codebase/pivot.js" type="text/javascript"></script> -->
+
+    <link rel="stylesheet" href="style.css" type="text/css">
+
   </head>
   <body>
 
@@ -26,13 +37,72 @@
     </select>
     {{y}}</p>
 
-  </span>
+    </span>
 
 </body>
 
 <script src='./renderer.js'></script>
+<script src='./data.js'></script>
 <script type='module'>
+
   import Vue from '../node_modules/vue/dist/vue.esm.browser.js';
   renderVue(Vue);
+
+  webix.ui({
+    id: 'main',
+    cols: [ 
+    {
+      id: 'side', 
+      header: 'side',
+      body: {
+        maxheight: 100,
+        rows: [
+          { 'view': 'text', 'label': 'First name', labelPosition: 'top' },
+          { 'view': 'text', 'label': 'Last name', labelPosition: 'top' },
+          { 'view': 'slider', 'label': 'Age', labelPosition: 'top', 'min': 0, 'max': 120, 'value': 45, 'title': 'age: #value#', id: 'slider' },
+          { 'view': 'button', 'label': 'Submit' },
+          { 'view': 'spacer'}
+        ]
+      }
+    },
+    {
+      header: 'Body',
+      collapsible: false,
+      body: {
+      rows: [
+        { 'view': 'template', 'template': 'hello world 3'},
+        { 'view': 'template', 'template': 'hello world 4'},
+      ]
+      }
+    },
+    
+    ]
+  })
+
+  /*
+  var grida = webix.ui({
+    id:"pivot",
+    view:"pivot",
+    data:pivot_data,
+    structure:{
+      rows: ["continent", "name"],
+      columns: ["year"],
+      values: [{ name:"balance", operation:"sum"},{ name:"oil", operation:"sum"}],
+      filters:[{name:"name",type:"text"}]
+    },  
+    css:"pivot-custom",	// to create unique selectors for the Pivot
+    yScaleWidth: 220,		// width for the first column
+    columnWidth: 100,		// width for columns 2..N  
+    popup:{
+      css:"pivot-custom-popup"	// to create unique selectors for the popup
+    },
+    // use datatable API to set size of rows/headers
+    datatable:{
+    rowHeight: webix.skin.$active.rowHeight,	// inherit sizes from the current skin
+      rowLineHeight: webix.skin.$active.rowHeight,
+      headerRowHeight: 40	// set a custom numeric value 
+    }
+  });
+ */
 </script>
 </html>
