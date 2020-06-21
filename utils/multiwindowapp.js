@@ -18,6 +18,7 @@ let MultiWindowApp = class {
 
   initialize(preserveState) {
     this.traymenu = new TrayMenu(this, config);
+    BrowserWindow.getAllWindows().map(w => w.close());
     var thisCopy = this;
     if(preserveState)
       fs.readFile(settings_file, 'utf-8', function(_err, data) {
@@ -42,7 +43,7 @@ let MultiWindowApp = class {
         settings = { size: [900,800] };
       }
   
-      console.log("Settings: ", settings);
+      //console.log("Settings: ", settings);
       let newWindow = new BrowserWindow({
         width: settings.size[0],
         height: settings.size[1],
@@ -62,6 +63,7 @@ let MultiWindowApp = class {
   
       newWindow.setTitle("Window #" + BrowserWindow.getAllWindows().length);
       newWindow.focus();
+      console.log("Spawning window #", newWindow.id);
       newWindow.webContents.on('dom-ready', () =>  {
         if(settings.data)
           newWindow.webContents.send(MESSAGES.SET_VALUES, settings.data)
@@ -73,34 +75,34 @@ let MultiWindowApp = class {
         newWindow = null;
       });
   
-      var started_moving = false;
-      var start_positions = {};
-      newWindow.on('will-move', (evt,newBounds) => {
-        var id = newWindow.id;
-        if(!started_moving) {
-          console.log("Collecting positions");
-          BrowserWindow.getAllWindows().map(w => start_positions[w.id] = w.getPosition());
-          console.log(start_positions);
-        }
+      // var started_moving = false;
+      // var start_positions = {};
+      // newWindow.on('will-move', (evt,newBounds) => {
+      //   var id = newWindow.id;
+      //   if(!started_moving) {
+      //     console.log("Collecting positions");
+      //     BrowserWindow.getAllWindows().map(w => start_positions[w.id] = w.getPosition());
+      //     console.log(start_positions);
+      //   }
   
-        started_moving = true;
-        console.log("Move started");
-        var currentPosition = newWindow.getPosition();
-        console.log(newBounds);
-        var shiftX = newBounds.x-start_positions[id][0];
-        var shiftY = newBounds.y-start_positions[id][1];
-        console.log("Shift: ", shiftX, shiftY);
-        BrowserWindow.getAllWindows().map(w => {
-          if(w.id == id)
-            return;
-          var position = start_positions[w.id];
-          var newPosition = [position[0]+shiftX, position[1]+shiftY]
-          //w.setPosition(newPosition[0], newPosition[1]);
-        })
+      //   started_moving = true;
+      //   console.log("Move started");
+      //   var currentPosition = newWindow.getPosition();
+      //   console.log(newBounds);
+      //   var shiftX = newBounds.x-start_positions[id][0];
+      //   var shiftY = newBounds.y-start_positions[id][1];
+      //   console.log("Shift: ", shiftX, shiftY);
+      //   BrowserWindow.getAllWindows().map(w => {
+      //     if(w.id == id)
+      //       return;
+      //     var position = start_positions[w.id];
+      //     var newPosition = [position[0]+shiftX, position[1]+shiftY]
+      //     //w.setPosition(newPosition[0], newPosition[1]);
+      //   })
   
-        //console.log(newWindow.getPosition());
-        console.log("===============")
-      })
+      //   //console.log(newWindow.getPosition());
+      //   console.log("===============")
+      // })
   
     }
     
@@ -109,6 +111,13 @@ let MultiWindowApp = class {
       return Menu.buildFromTemplate([{
         label: '&File',
         submenu: [
+            {
+                label: '&Reload settings',
+                accelerator: 'CmdOrCtrl+R',
+                click() {
+                    thisCopy.initialize(true);
+                }
+            },
             {
                 label: '&Save settings',
                 accelerator: 'CmdOrCtrl+S',
@@ -166,10 +175,16 @@ let MultiWindowApp = class {
     }
 
   savesettings() {
-    BrowserWindow.getAllWindows().map(w => w.send(MESSAGES.UPDATE));
+    // seriously the amount of stuff that is done here just to send a message
+    // and get a response is insane. Why are window.id not the same on the way back?
+
+    // prepare listeners
     ipc.on(MESSAGES.UPDATE_RESPONSE, (evt,args) => {
-      this.updates[evt.sender.id] = args;
-      if(Object.keys(this.updates).length == BrowserWindow.getAllWindows().length) {
+      console.log(`Received from ${args.id}: ${JSON.stringify(args.data)}`);
+      this.updates[args.id] = args.data;
+      // this is stupid - surely there should be a simpler way to do this
+      var ready = BrowserWindow.getAllWindows().filter(w => !this.updates[w.id]).length == 0;
+      if(ready) {
         showCoordinates();
         var data = BrowserWindow.getAllWindows().map(w => {
           return {
@@ -191,6 +206,14 @@ let MultiWindowApp = class {
         }
       }
     });
+
+    console.log("Sending update message");
+    BrowserWindow.getAllWindows().map(w => {
+      console.log("Sending message to ", w.id);
+      var data = {id: w.id};
+      w.send(MESSAGES.UPDATE, data);
+    } );
+    
   }
         
   }

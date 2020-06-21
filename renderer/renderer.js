@@ -2,8 +2,8 @@
 var {ipcRenderer } = require('electron');
 var {MESSAGES} = require('../utils/apputils');
 
-ipcRenderer.on(MESSAGES.UPDATE, () => {
-    ipcRenderer.send(MESSAGES.UPDATE_RESPONSE, vue.$data);
+ipcRenderer.on(MESSAGES.UPDATE, (evt, args) => {
+    ipcRenderer.send(MESSAGES.UPDATE_RESPONSE, { data: vue.$data, id: args.id });
 })
 
 ipcRenderer.on(MESSAGES.SET_VALUES, (evt,argv) => {
