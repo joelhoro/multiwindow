@@ -3,11 +3,14 @@ var {ipcRenderer } = require('electron');
 var {MESSAGES} = require('../utils/apputils');
 
 ipcRenderer.on(MESSAGES.UPDATE, (evt, args) => {
-    ipcRenderer.send(MESSAGES.UPDATE_RESPONSE, { data: vue.$data, id: args.id });
+    var state = webix.UIManager.getState("main", true);
+    ipcRenderer.send(MESSAGES.UPDATE_RESPONSE, { data: vue.$data, id: args.id, state });
 })
 
 ipcRenderer.on(MESSAGES.SET_VALUES, (evt,argv) => {
-    Object.keys(argv).map(k => Vue.set(vue, k, argv[k]));
+    webix.UIManager.setState(argv.state);
+    var data = argv.data;
+    Object.keys(data).map(k => Vue.set(vue, k, data[k]));
 });
 
 var vue;
