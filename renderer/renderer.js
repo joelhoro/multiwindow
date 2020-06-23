@@ -13,6 +13,8 @@ ipcRenderer.on(MESSAGES.SET_VALUES, (evt,argv) => {
     Object.keys(data).map(k => Vue.set(vue, k, data[k]));
 });
 
+ipcRenderer.on('toggleside', toggleSideBar);
+
 var vue;
 var Vue;
 function renderVue(VueLib) {
@@ -39,3 +41,10 @@ function renderVue(VueLib) {
     });
 }
 
+function toggleSideBar() {
+  var side = $$('side');
+  if(side.isVisible())
+    side.hide()
+  else
+    side.show();
+}

@@ -149,6 +149,18 @@ let MultiWindowApp = class {
         ]
       },
       {
+        label: '&Window',
+        submenu: [
+          {
+            label: 'Toggle sidebar',
+            accelerator: 'CmdOrCtrl+T',
+            click(evt, w) {
+              w.send('toggleside');
+            }
+          }
+        ]
+      },
+      {
           label: '&Links',
           submenu: this.traymenu.linkMenu(config.links)
       },
